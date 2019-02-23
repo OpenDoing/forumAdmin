@@ -17,127 +17,145 @@ import Layout from '../views/layout/Layout'
 * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
 * name:'router-name'             the name is used by <keep-alive> (must set!!!)
 * meta : {
-    title: 'title'               the name show in subMenu and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar
-    breadcrumb: false            if false, the item will hidden in breadcrumb(default is true)
+    title: 'title'               the name show in submenu and breadcrumb (recommend set)
+    icon: 'svg-name'             the icon show in the sidebar,
   }
 **/
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
-
   {
     path: '/',
+    component: () => import('@/views/login/index'),
+    redirect: '/login',
+    name: '登录'
+    // children: [{
+    //   path: 'login',
+    //   component: () => import('@/views/login/index')
+    // }]
+  },
+  // { path: '/home',component: Layout, component: () => import('@/views/home/index'), hidden: true },
+  {
+    path: '/home',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
+    redirect: '/home',
+    name: '首页',
+    // hidden: true,
     children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
+      path: 'home',
+      name: '个人主页',
+      component: () => import('@/views/home/index'),
+      meta: { title: '首页', icon: 'table' }
     }]
   },
-
   {
-    path: '/example',
+    path: '/spec',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/spec/create',
+    name: '规约生成',
+    meta: { title: '规约生成', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'manual',
+        name: '手动生成',
+        component: () => import('@/views/specification/manual/index'),
+        meta: { title: '手动生成', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'semiauto',
+        name: '半自动化生成',
+        component: () => import('@/views/specification/semiauto/index'),
+        meta: { title: '半自动化生成', icon: 'tree' }
       }
+      // {
+      //   path: 'auto',
+      //   name: '全自动化生成',
+      //   component: () => import('@/views/specification/auto/index'),
+      //   meta: { title: '全自动化生成', icon: 'tree' }
+      // }
     ]
   },
 
   {
-    path: '/form',
+    path: '/parse',
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: '',
+        name: '规约解析',
+        component: () => import('@/views/parse/index'),
+        meta: { title: '规约解析', icon: 'form' }
       }
     ]
   },
-
   {
-    path: '/nested',
+    path: '/cases',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: '',
+        name: '测试数据生成',
+        component: () => import('@/views/cases/index'),
+        meta: { title: '测试数据生成', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/monic',
+    component: Layout,
+    redirect: '',
+    name: '单线序列生成',
+    meta: { title: '单线序列生成', icon: 'example' },
+    children: [
+      {
+        path: 'construction',
+        name: 'TEG-I构造器',
+        component: () => import('@/views/mongline/construction/index'),
+        meta: { title: 'TEG-I构造器', icon: 'table' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        path: 'transform',
+        name: 'TEG-I转换器',
+        component: () => import('@/views/mongline/transform/index'),
+        meta: { title: 'TEG-I转换器', icon: 'form' }
+      },
+      {
+        path: 'generate',
+        name: '单线序列生成器',
+        component: () => import('@/views/mongline/generate/index'),
+        meta: { title: '单线序列生成器', icon: 'tree' }
       }
     ]
   },
-
   {
-    path: 'external-link',
+    path: '/run',
+    component: Layout,
+    name: '测试驱动执行',
+    meta: { title: '测试驱动执行', icon: 'example' },
+    children: [
+      {
+        path: '',
+        name: '映射',
+        component: () => import('@/views/run/map/index'),
+        meta: { title: '映射', icon: 'form' }
+      },
+      {
+        path: '',
+        name: '测试驱动执行',
+        component: () => import('@/views/run/index'),
+        meta: { title: '测试驱动执行', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/evaluate',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: '',
+        name: '测试结果评估',
+        component: () => import('@/views/evaluate/index'),
+        meta: { title: '测试结果评估', icon: 'form' }
       }
     ]
   },
@@ -146,7 +164,8 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history', // 后端支持可开
+  base: '/dist/',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })

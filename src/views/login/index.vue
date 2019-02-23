@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <h3 class="title">vue-admin-template</h3>
+    <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
+      <h3 class="title">基于代数规约的Web服务测试系统</h3>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -20,51 +20,54 @@
           placeholder="password"
           @keyup.enter.native="handleLogin" />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon icon-class="eye" />
         </span>
       </el-form-item>
       <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Sign in
+        <el-button :loading="loading" type="primary" style="width:100%;" @click="Login">
+          登录
         </el-button>
       </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
-      </div>
+      <!--<div class="tips">-->
+      <!--<span style="margin-right:20px;">username: test41</span>-->
+      <!--<span> password: 123456</span>-->
+      <!--</div>-->
     </el-form>
   </div>
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
+// import { isvalidUsername } from '@/utils/validate'
+import axios from 'axios'
+import { config } from '../../utils/request'
+import { setToken, setUsername } from '../../utils/auth'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
-        callback()
-      }
-    }
-    const validatePass = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error('密码不能小于5位'))
-      } else {
-        callback()
-      }
-    }
+    // const validateUsername = (rule, value, callback) => {
+    //   if (!isvalidUsername(value)) {
+    //     callback(new Error('请输入正确的用户名'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    // const validatePass = (rule, value, callback) => {
+    //   if (value.length < 5) {
+    //     callback(new Error('密码不能小于5位'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        username: '',
+        password: ''
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
-      },
+      // loginRules: {
+      //   username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+      //   password: [{ required: true, trigger: 'blur', validator: validatePass }]
+      // },
       loading: false,
       pwdType: 'password',
       redirect: undefined
@@ -92,7 +95,8 @@ export default {
           this.loading = true
           this.$store.dispatch('Login', this.loginForm).then(() => {
             this.loading = false
-            this.$router.push({ path: this.redirect || '/' })
+            // this.$router.push({ path: this.redirect || '/' })
+            this.$router.push('/home')
           }).catch(() => {
             this.loading = false
           })
@@ -101,6 +105,44 @@ export default {
           return false
         }
       })
+    },
+    Login() {
+      const self = this
+      const url = config.base_url + '/login'
+      axios
+        .post(url, {
+          username: this.loginForm.username,
+          password: this.loginForm.password
+        })
+        .then(response => {
+          const data = response.data
+          if (data.errno === 500) {
+            self.$notify.info({
+              title: '提示',
+              message: '请输入正确的用户名!'
+            })
+          } else if (data.errno === 403) {
+            self.$notify.info({
+              title: '提示',
+              message: '账号密码错误!'
+            })
+          } else if (data.errno === 402) {
+            self.$notify.info({
+              title: '提示',
+              message: '请输入正确的用户名！'
+            })
+          } else if (data.errno === 0) {
+            setToken(data.data.token)
+            setUsername(data.data.username)
+            this.$router.push('/home')
+          }
+        })
+        .catch(function() {
+          self.$notify.error({
+            title: '错误',
+            message: '服务器端无响应！'
+          })
+        })
     }
   }
 }
